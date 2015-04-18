@@ -14,43 +14,64 @@ Player::~Player()
 
 bool Player::init()
 {
-	this->bodyPlayer = PhysicsBody::createBox(Size(27, 31), PhysicsMaterial(1.0f, 0.0f, 1.0f));
-	this->bodyPlayer->setRotationEnable(false);
-	this->bodyPlayer->setMass(10.0f);
+	// set all texture
+	this->initSprite = Sprite::create("pictures/heroInit.png");
 
-	this->spritePlayer = Sprite::create("pictures/hero.png", Rect(223, 20, 28, 32));
+	// init first sprite
+	this->spritePlayer = Sprite::create();
+	this->changeSprite(this->initSprite);
+	//this->spritePlayer->setAnchorPoint(Vec2(0, 0));
 	this->spritePlayer->setPosition(Vec2(this->myVisibleSize.width / 2 + this->myOrigin.x, this->myVisibleSize.height / 2 + this->myOrigin.y));
-	this->spritePlayer->setAnchorPoint(Vec2(0, 0));
-	this->spritePlayer->setScale(2.0f, 2.0f);
+	this->spritePlayer->setScale(SCALE_PLAYER, SCALE_PLAYER);
 
+	// set PhysicsBody
+	this->bodyPlayer = PhysicsBody::createBox(/*this->spritePlayer->getContentSize()*/Size(29.0f, 33.0f) * SCALE_PLAYER);
+	this->bodyPlayer->setRotationEnable(false);
 	this->bodyPlayer->setGravityEnable(true);
 
+	// set Physicsbody to our player
 	this->spritePlayer->setPhysicsBody(this->bodyPlayer);
 
 	return true;
 }
 
+void Player::changeSprite(Sprite *newSprite)
+{
+	this->spritePlayer->setTexture(newSprite->getTexture());
+	this->spritePlayer->setTextureRect(newSprite->getTextureRect());
+	this->lookHeroRight = true;
+}
+
+
 void Player::update()
 {
-	
+	if ((this->bodyPlayer->getVelocity().x > 10 && this->lookHeroRight == false)
+		|| (this->bodyPlayer->getVelocity().x < -10 && this->lookHeroRight == true))
+		this->changeLook();
+}
+
+void Player::changeLook()
+{
+	this->lookHeroRight = !this->lookHeroRight;
+	this->spritePlayer->setFlipX(!this->spritePlayer->isFlipX());
 }
 
 void Player::moveToLeft()
 {
-	this->spritePlayer->setPositionX(this->spritePlayer->getPositionX() - 2.0f);
+	this->bodyPlayer->setVelocity(Vec2(-200, this->bodyPlayer->getVelocity().y));
 }
 
 void Player::moveToRight()
 {
-	this->spritePlayer->setPositionX(this->spritePlayer->getPositionX() + 2.0f);
+	this->bodyPlayer->setVelocity(Vec2(200, this->bodyPlayer->getVelocity().y));
 }
 
 void Player::resetVelocity()
 {
-	this->bodyPlayer->setVelocity(Vec2(0, 0));
+	this->bodyPlayer->setVelocity(Vec2(this->bodyPlayer->getVelocity().x, 0));
 }
 
 void Player::jump()
 {
-	this->bodyPlayer->setVelocity(Vec2(0, 150));
+	this->bodyPlayer->setVelocity(Vec2(this->bodyPlayer->getVelocity().x, 500));
 }

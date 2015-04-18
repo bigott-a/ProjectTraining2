@@ -3,6 +3,8 @@
 
 #include "cocos2d.h"
 
+#define	SCALE_PLAYER	2.0f
+
 class						Player : public cocos2d::Layer
 {
 public:
@@ -18,10 +20,16 @@ public:
 	void					jump(void);
 
 private:
+	void					changeLook();
+	void					changeSprite(cocos2d::Sprite *newSprite);
+
 	cocos2d::Size			myVisibleSize;
 	cocos2d::Vec2			myOrigin;
 	cocos2d::PhysicsBody	*bodyPlayer;
 
+	cocos2d::Sprite			*initSprite;
+
+	bool					lookHeroRight;
 };
 
 #endif
